@@ -1,8 +1,35 @@
+'''
+Get Possible Combinations of Green and Blue values corresponding to different triggers
+
+Inputs:
+ 
+ backgroundcolor       3 element vector specifing the RGB values (between
+                       0 and 255) of the background color (e.g. [200,200,200]
+ show_visual           If set to true, a figure with all different colors
+                       that lead to different trigger values. For each
+                       plot the left color is the backgroundcolor and the
+                       right is the trigger color
+                       (Note that those are not all colors resulting in 
+                       their corresponding triggers)
+
+Outputs:
+ 
+ rgb_trig_vals         255 x 4 list of RGB colors (column 1-3) and their 
+                       trigger values (column 4).
+
+
+C.Postzich, 14.Dec.2021
+
+'''
+
+
+# Import Libraries
 import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as grd
 import math
 
+# Define Function
 def PixelTrigger_Colors(backgroundcolor, show_visual):
 
     all_comb = [bin(i) for i in range(255)]
@@ -42,10 +69,8 @@ def PixelTrigger_Colors(backgroundcolor, show_visual):
             ax.add_patch(plt.Rectangle((0.0,0.0), 0.5, 1.0, fill = True, facecolor = [y/256 for _,y in enumerate(backgroundcolor)]))
             ax.add_patch(plt.Rectangle((0.5,0.0), 0.5, 1.0, fill = True, facecolor = [y/256 for _,y in enumerate(x[0])]))
             ax.set_title(str(x[1]),fontdict = {'fontsize': 7}, pad=2)
-        print()
         plt.show()
         
-
     return rgb_trig_vals
 
 
