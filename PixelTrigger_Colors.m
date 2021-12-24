@@ -34,21 +34,25 @@ end
 
 all_combinations = dec2bin(0:255);
 
-green_startval = dec2bin(backgroundcolor(2));
-blue_startval = dec2bin(backgroundcolor(3));
-
-temp_blue = []; temp_green = [];
 rgb_trig_vals = repmat([backgroundcolor(1),0,0],size(all_combinations,1),1);
 for i = 1:size(all_combinations,1)
-    temp_green = green_startval;
-    temp_green(1:2:8) = all_combinations(i,1:4);
-    rgb_trig_vals(i,2) = bin2dec(temp_green);
+    temp_bin_g = '00000000';
+    temp_bin_g(1:2:8) = all_combinations(i,1:4);
+    temp_bin_b = '00000000';
+    temp_bin_b(1:2:8) = all_combinations(i,5:8);
+    temp_comb = zeros(size(all_combinations,1),3);
+    for j = 1:size(all_combinations,1)
+        temp_bin_g(2:2:8) = all_combinations(j,1:4);
+        temp_bin_b(2:2:8) = all_combinations(j,5:8);
+        temp_comb(j,1:2) = [bin2dec(temp_bin_g) bin2dec(temp_bin_b)];
+        temp_diffcol = [transpose(0:255), repmat(temp_comb(j,1:2),256,1)];
+        [temp_comb(j,3), temp_comb(j,4)] = min(1 - dot(temp_diffcol, repmat(backgroundcolor,256,1),2) ./ vecnorm(temp_diffcol,2,2) ./ vecnorm(repmat(backgroundcolor,256,1),2,2));
+    end
+    [~,idx] = min(temp_comb(:,3));
     
-    temp_blue = blue_startval;
-    temp_blue(1:2:8) = all_combinations(i,5:8);
-    rgb_trig_vals(i,3) = bin2dec(temp_blue);
+    rgb_trig_vals(i,1:3) = [temp_comb(idx,4)-1 temp_comb(idx,1:2)];
+    rgb_trig_vals(i,4) = gb2trigger(rgb_trig_vals(i,2:3));
 end
-rgb_trig_vals(:,4) = transpose(0:255);
 rgb_trig_vals(rgb_trig_vals(:,1) == backgroundcolor(1) &...
     rgb_trig_vals(:,2) == backgroundcolor(2) &...
     rgb_trig_vals(:,3) == backgroundcolor(3),:) = [];
@@ -69,6 +73,26 @@ if(show_visual)
     dcm.UpdateFcn = @displayColor;
     
 end
+
+end
+
+% Callback function for verifying the blue and green values match the
+% trigger value
+function trig_val = gb2trigger(bg)
+
+green_bin = fliplr(dec2bin(bg(1)));
+if(length(green_bin) == 1)
+    trigger_bin = '0';
+else
+    trigger_bin = fliplr(green_bin(2:2:end));
+end
+blue_bin = fliplr(dec2bin(bg(2)));
+if(length(blue_bin) == 1)
+    trigger_bin = [trigger_bin, '0000'];
+else
+    trigger_bin = [trigger_bin, repmat('0',1,4-length(blue_bin(2:2:end))), fliplr(blue_bin(2:2:end))];
+end
+trig_val = bin2dec(trigger_bin);
 
 end
 
