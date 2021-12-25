@@ -54,8 +54,8 @@ for i = 1:size(all_combinations,1)
     rgb_trig_vals(i,4) = gb2trigger(rgb_trig_vals(i,2:3));
 end
 rgb_trig_vals(rgb_trig_vals(:,1) == backgroundcolor(1) &...
-    rgb_trig_vals(:,2) == backgroundcolor(2) &...
-    rgb_trig_vals(:,3) == backgroundcolor(3),:) = [];
+              rgb_trig_vals(:,2) == backgroundcolor(2) &...
+              rgb_trig_vals(:,3) == backgroundcolor(3),:) = [];
 
 % Plot Colors belonging to trigger values if visuals are wanted
 if(show_visual)
