@@ -1,3 +1,21 @@
+'''
+Convert RGB Triplet into Trigger Value for ProPixx
+
+Inputs:
+ 
+ RGB                3 element vector specifing an RGB triplet with values between
+                    0 and 255 (e.g. [200,200,200])
+
+Outputs:
+ 
+ triggervalue       integer between 0 and 255 indicating the trigger value associated
+                    with the RGB triplet
+                       
+
+C.Postzich, 25.Dec.2021
+
+'''
+
 
 def rgb2triggervalue(rgb):
 
@@ -16,3 +34,4 @@ def rgb2triggervalue(rgb):
 print(rgb2triggervalue([0,1,14]))
 print(rgb2triggervalue([200,202,201]))
 print(rgb2triggervalue([27,14,226]))
+

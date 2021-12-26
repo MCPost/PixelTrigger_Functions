@@ -1,5 +1,5 @@
 '''
-Get Possible Combinations of Green and Blue values corresponding to different triggers
+Get the closest RGB triplets for all triggers given a background rgb color
 
 Inputs:
  
@@ -11,14 +11,19 @@ Inputs:
                        right is the trigger color
                        (Note that those are not all colors resulting in 
                        their corresponding triggers)
+ red_dim_samples       Number of samples along the red color dimension during
+                       search. Values of 256 and higher lead to a full search
+                       (really slow and often unnecessary). Default = 10
 
 Outputs:
  
- rgb_trig_vals         256 x 4 list of RGB colors (column 1-3) and their 
-                       trigger values (column 4).
+ rgb_trig_vals         dict with 256 entries: Each key belongs to a different 
+                       trigger value while the entry for a key is the RGB triplet
+                       with the closest possible color matching the background
+                       
 
 
-C.Postzich, 14.Dec.2021
+C.Postzich, 25.Dec.2021
 
 '''
 
@@ -31,7 +36,7 @@ import numpy as np
 
 
 # Define Function
-def PixelTrigger_Colors(backgroundcolor, show_visual):
+def PixelTrigger_BackgroundColor(backgroundcolor, show_visual, red_dim_samples = 10):
 
     print("Search for closest color to background for each trigger value:\n")
 
@@ -56,7 +61,7 @@ def PixelTrigger_Colors(backgroundcolor, show_visual):
             temp_comb2 = list('0'*max(0, 8-len(temp_comb2))) + temp_comb2
             temp_green[1::2] = temp_comb2[0:4]
             temp_blue[1::2] = temp_comb2[4:8]
-            temp_closecol[j,0:4] = get_closest_col([int(''.join(temp_green),2), int(''.join(temp_blue),2)], backgroundcolor)
+            temp_closecol[j,0:4] = get_closest_col([int(''.join(temp_green),2), int(''.join(temp_blue),2)], backgroundcolor, red_dim_samples)
         
         rgb_trig_vals.update({i: tuple([int(n) for _,n in enumerate(temp_closecol[temp_closecol[:,3].argmin(),0:3])])})
         disp_progress(i+1, len(all_comb))
@@ -77,12 +82,12 @@ def PixelTrigger_Colors(backgroundcolor, show_visual):
         
     return rgb_trig_vals
 
-def get_closest_col(bg, backgroundcolor):
+def get_closest_col(bg, backgroundcolor, red_dim_samples):
     eps = 0.0000000001
     bkgd_norm = np.linalg.norm(backgroundcolor)
     start_val = int(np.mean(bg))
-    col_dist_list = np.zeros((np.amin([255,start_val+10]) - np.amax([0, start_val-10]),4))
-    for ind, c in enumerate(range(np.amax([0, start_val-10]), np.amin([255,start_val+10]), 1)):
+    col_dist_list = np.zeros((np.amin([255,start_val+red_dim_samples]) - np.amax([0, start_val-red_dim_samples]),4))
+    for ind, c in enumerate(range(np.amax([0, start_val-red_dim_samples]), np.amin([255,start_val+red_dim_samples]), 1)):
         col_dist_list[ind,0:3] = [c] + bg
         col_dist_list[ind,3] = 1 - np.dot(col_dist_list[ind,0:3],backgroundcolor) / np.max([eps, np.linalg.norm(col_dist_list[ind,0:3])]) / bkgd_norm
     return(col_dist_list[col_dist_list[:,3].argmin(),])
@@ -96,6 +101,6 @@ def disp_progress(ind, full, barLength = 50):
 
 
 backgroundcolor = (200,200,200)
-rgb_trig_vals = PixelTrigger_Colors(backgroundcolor,True)
+rgb_trig_vals = PixelTrigger_BackgroundColor(backgroundcolor,True)
 print("\n".join("{}\t{}".format(k, v) for k, v in rgb_trig_vals.items()))
 

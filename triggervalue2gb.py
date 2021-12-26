@@ -8,7 +8,7 @@ Inputs:
 Outputs:
 
  GB                 list of all 2 element vector specifing an GB tuple with values between
-                    0 and 255 (e.g. [200,200,200]) that are associated with the triggervalue
+                    0 and 255 (e.g. [200,200]) that are associated with the triggervalue
                     (Note that the the red value can vary freely)
  
                        
