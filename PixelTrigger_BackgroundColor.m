@@ -1,4 +1,4 @@
-function rgb_trig_vals = PixelTrigger_Colors(backgroundcolor, varargin)
+function rgb_trig_vals = PixelTrigger_BackgroundColor(backgroundcolor, varargin)
 
 %% Get Possible Combinations of Green and Blue values corresponding to different triggers
 
@@ -18,7 +18,7 @@ function rgb_trig_vals = PixelTrigger_Colors(backgroundcolor, varargin)
 % rgb_trig_vals         255 x 4 list of RGB colors (column 1-3) and their 
 %                       trigger values (column 4).
 %
-% C.Postzich, 14.Dec.2021
+% C.Postzich, 25.Dec.2021
 
 
 % Validate Function Inputs
@@ -51,7 +51,7 @@ for i = 1:size(all_combinations,1)
     [~,idx] = min(temp_comb(:,3));
     
     rgb_trig_vals(i,1:3) = [temp_comb(idx,4)-1 temp_comb(idx,1:2)];
-    rgb_trig_vals(i,4) = gb2trigger(rgb_trig_vals(i,2:3));
+    rgb_trig_vals(i,4) = rgb2triggervalue(rgb_trig_vals(i,:));
 end
 rgb_trig_vals(rgb_trig_vals(:,1) == backgroundcolor(1) &...
               rgb_trig_vals(:,2) == backgroundcolor(2) &...
@@ -78,21 +78,15 @@ end
 
 % Callback function for verifying the blue and green values match the
 % trigger value
-function trig_val = gb2trigger(bg)
+function triggervalue = rgb2triggervalue(RGB)
 
-green_bin = fliplr(dec2bin(bg(1)));
-if(length(green_bin) == 1)
-    trigger_bin = '0';
-else
-    trigger_bin = fliplr(green_bin(2:2:end));
-end
-blue_bin = fliplr(dec2bin(bg(2)));
-if(length(blue_bin) == 1)
-    trigger_bin = [trigger_bin, '0000'];
-else
-    trigger_bin = [trigger_bin, repmat('0',1,4-length(blue_bin(2:2:end))), fliplr(blue_bin(2:2:end))];
-end
-trig_val = bin2dec(trigger_bin);
+green_bin = dec2bin(RGB(2));
+green_bin = [repmat('0',1,8-length(green_bin)) green_bin];
+blue_bin = dec2bin(RGB(3));
+blue_bin = [repmat('0',1,8-length(blue_bin)) blue_bin];
+
+trigger_bin = [green_bin(1:2:8) blue_bin(1:2:8)];
+triggervalue = bin2dec(trigger_bin);
 
 end
 
