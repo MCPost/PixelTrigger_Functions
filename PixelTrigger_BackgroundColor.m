@@ -40,10 +40,10 @@ rgb_trig_vals = repmat([backgroundcolor(1),0,0],size(all_combinations,1),1);
 for i = 1:size(all_combinations,1)
     temp_bin_g = '00000000';
     %temp_bin_g(1:2:8) = all_combinations(i,1:4);
-    temp_bin_g(5:8) = all_combinations(i,1:4);
+    temp_bin_g(5:8) = all_combinations(i,5:8);
     temp_bin_b = '00000000';
     %temp_bin_b(1:2:8) = all_combinations(i,5:8);
-    temp_bin_b(5:8) = all_combinations(i,5:8);
+    temp_bin_b(5:8) = all_combinations(i,1:4);
     temp_comb = zeros(size(all_combinations,1),3);
     for j = 1:size(all_combinations,1)
         %temp_bin_g(2:2:8) = all_combinations(j,1:4);
@@ -96,7 +96,7 @@ blue_bin = dec2bin(RGB(3));
 blue_bin = [repmat('0',1,8-length(blue_bin)) blue_bin];
 
 %trigger_bin = [green_bin(1:2:8) blue_bin(1:2:8)];
-trigger_bin = [green_bin(5:8) blue_bin(5:8)];
+trigger_bin = [blue_bin(5:8) green_bin(5:8)];
 triggervalue = bin2dec(trigger_bin);
 
 end

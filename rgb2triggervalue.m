@@ -22,7 +22,7 @@ blue_bin = dec2bin(RGB(3));
 blue_bin = [repmat('0',1,8-length(blue_bin)) blue_bin];
 
 %trigger_bin = [green_bin(1:2:8) blue_bin(1:2:8)];
-trigger_bin = [green_bin(5:8) blue_bin(5:8)];
+trigger_bin = [blue_bin(5:8) green_bin(5:8)];
 triggervalue = bin2dec(trigger_bin);
 
 end

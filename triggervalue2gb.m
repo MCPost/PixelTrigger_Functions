@@ -21,10 +21,10 @@ all_combinations = dec2bin(0:255);
 
 temp_bin_g = '00000000';
 %temp_bin_g(1:2:8) = trigger_bin(1:4);
-temp_bin_g(5:8) = trigger_bin(1:4);
+temp_bin_g(5:8) = trigger_bin(5:8);
 temp_bin_b = '00000000';
 %temp_bin_b(1:2:8) = trigger_bin(5:8);
-temp_bin_b(5:8) = trigger_bin(5:8);
+temp_bin_b(5:8) = trigger_bin(1:4);
 GB = zeros(size(all_combinations,1),2);
 for j = 1:size(all_combinations,1)
     %temp_bin_g(2:2:8) = all_combinations(j,1:4);
