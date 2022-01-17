@@ -31,9 +31,7 @@ C.Postzich, 25.Dec.2021
 
 
 # Import Libraries
-import matplotlib
 import matplotlib.pyplot as plt
-import matplotlib.gridspec
 import numpy as np
 
 
@@ -130,7 +128,6 @@ def get_closest_col(bg, backgroundcolor, red_dim_samples):
     return(col_dist_list[col_dist_list[:,3].argmin(),])
 
 def rgb2triggervalue(rgb):
-
     green_bin = list(bin(rgb[1]))
     green_bin = green_bin[2:]
     green_bin = list('0'*max(0, 8-len(green_bin))) + green_bin
