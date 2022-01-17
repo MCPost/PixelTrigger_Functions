@@ -77,40 +77,43 @@ def PixelTrigger_BackgroundColor(backgroundcolor, show_visual, red_dim_samples =
 
     if show_visual:
 
+        outer_pad = 100
+        left_pad = 8
+        right_pad = 8
+        upper_pad = 16
+        lower_pad = 4
         background_trigval = rgb2triggervalue(backgroundcolor)
 
-        def hover(event):
-            #print(event)
-            if event.inaxes is not None:
-                if np.ceil(event.x/1200*35.999 % 36) % 2 == 1:
-                    annot.xy = (event.xdata, event.ydata)
-                    print('Background ' + str(int(np.ceil(np.ceil(event.x/1200*35.999 % 36)/2 + 18*(np.ceil((1-event.y/650)*14.999 % 15)-1) - 1))) + '\t' + ', '.join([str(x) for x in backgroundcolor]))
-                    annot.set_text(', '.join([str(x) for x in backgroundcolor]))
-                    annot.set_visible(True)
-                else:
-                    annot.xy = (event.xdata, event.ydata)
-                    print('TriggerVal ' + str(int(np.floor(np.ceil(event.x/1200*35.999 % 36)/2 + 18*(np.ceil((1-event.y/650)*14.999 % 15)-1) - 1))) + '\t' + ', '.join([str(x) for x in rgb_trig_vals[np.ceil(event.x/1200*35.999 % 36)/2 + 18*(np.ceil((1-event.y/650)*14.999 % 15)-1) - 1]]))
-                    annot.set_text(', '.join([str(x) for x in rgb_trig_vals[np.ceil(event.x/1200*35.999 % 36)/2 + 18*(np.ceil((1-event.y/650)*14.999 % 15)-1) - 1]]))
-                    annot.set_visible(True)
-                    #print(np.ceil(event.x/1200*35.999 % 36)/2 + 18*(np.ceil((1-event.y/650)*14.999 % 15)-1))
-
-                #print(np.ceil(event.x/1200*35 % 36), np.ceil((1-event.y/650)*14 % 15))
-            #annot.set_visible(False)
-
-        fig = plt.figure(figsize = (12.0, 6.5), constrained_layout=True)
-        gs = fig.add_gridspec(15, 18)
-        for i,key in enumerate(rgb_trig_vals):
-            ax = fig.add_subplot(gs[int(np.floor(i/18)), i % 18])
-            ax.tick_params( bottom = False, left = False,labelbottom = False, labelleft = False)
-            ax.add_patch(plt.Rectangle((0.0,0.0), 0.5, 1.0, fill = True, facecolor = [y/256 for _,y in enumerate(backgroundcolor)]))
-            ax.add_patch(plt.Rectangle((0.5,0.0), 0.5, 1.0, fill = True, facecolor = [y/256 for _,y in enumerate(rgb_trig_vals[key])]))
-            if background_trigval == key:
-                ax.set_title(str(key),fontdict = {'fontsize': 7,'fontweight': 'bold'}, color='r', pad=2)
+        def pick_patch(event):
+            if event.guiEvent.num == 3:
+                annot.set_visible(False)
+                fig.canvas.draw_idle()
             else:
-                ax.set_title(str(key),fontdict = {'fontsize': 7}, pad=2)
-        annot = plt.annotate("", xy=(0, 0), xycoords="figure fraction", xytext=(0,0), fontsize=15)
-        annot.set_visible(False)
-        fig.canvas.mpl_connect("motion_notify_event",hover)
+                if isinstance(event.artist, plt.Rectangle):
+                    patch = event.artist
+                    annot.set_position((event.mouseevent.x/1200, event.mouseevent.y/650))
+                    annot.set_text(f'{[int(x*256) for x in patch.get_facecolor()[0:3]]}')
+                    annot.set_visible(True)
+                    fig.canvas.draw_idle()
+
+
+        fig = plt.figure(figsize = (12.0, 6.5))
+        ax = fig.add_axes([0,0,1,1], picker = True)
+        ax.tick_params( bottom = False, left = False,labelbottom = False, labelleft = False)
+        for i in range(256):
+            x_len = 0.5*((1200/(18*1200)) - (left_pad+right_pad)/(1200-outer_pad))
+            y_len = ((650/(15*650)) - (upper_pad+lower_pad)/650)
+            x_offs = left_pad/(1200-outer_pad) + ((i % 18)*(1200-outer_pad))/(18*(1200))
+            y_offs = 1 - (((int(np.floor(i/18))+1)*650)/(15*650) - lower_pad/650)
+            ax.add_patch(plt.Rectangle((x_offs, y_offs), x_len, y_len, fill = True, edgecolor='black', facecolor = [y/256 for _,y in enumerate(backgroundcolor)],picker=True))
+            ax.add_patch(plt.Rectangle((x_len+x_offs, y_offs), x_len, y_len, fill = True, edgecolor='black', facecolor = [y/256 for _,y in enumerate(rgb_trig_vals[i])],picker=True))
+            if background_trigval == i:
+                ax.text(x_len+x_offs,y_len+y_offs+2/650,i,fontdict = {'fontsize': 9,'fontweight': 'bold'}, color='r', ha='center')
+            else:
+                ax.text(x_len+x_offs,y_len+y_offs+2/650,i,fontdict = {'fontsize': 9}, ha='center')
+
+        annot = ax.text(0, 0, "hello", bbox ={'facecolor':'yellow','alpha':0.6}, visible = False, picker = True)
+        fig.canvas.mpl_connect("pick_event", pick_patch)
         plt.show()
         
     return rgb_trig_vals
