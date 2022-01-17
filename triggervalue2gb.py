@@ -30,10 +30,10 @@ def triggervalue2gb(triggervalue):
 
     temp_green = list('00000000')
     #temp_green[0::2] = trigger_bin[0:4]
-    temp_green[4:8] = trigger_bin[0:4]
+    temp_green[4:8] = trigger_bin[4:8]
     temp_blue = list('00000000')
     #temp_blue[0::2] = trigger_bin[4:8]
-    temp_blue[4:8] = trigger_bin[4:8]
+    temp_blue[4:8] = trigger_bin[0:4]
 
     GB = [[] for _ in range(len(all_comb))]
     for j,y in enumerate(all_comb):
@@ -48,4 +48,4 @@ def triggervalue2gb(triggervalue):
 
     return(GB)
 
-print(triggervalue2gb(190))
+print(triggervalue2gb(32))

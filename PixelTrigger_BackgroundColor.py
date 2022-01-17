@@ -53,10 +53,10 @@ def PixelTrigger_BackgroundColor(backgroundcolor, show_visual, red_dim_samples =
 
         temp_green = list('00000000')
         #temp_green[0::2] = temp_comb[0:4]
-        temp_green[4:8] = temp_comb[0:4]
+        temp_green[4:8] = temp_comb[4:8]
         temp_blue = list('00000000')
         #temp_blue[0::2] = temp_comb[4:8]
-        temp_blue[4:8] = temp_comb[4:8]
+        temp_blue[4:8] = temp_comb[0:4]
 
         temp_closecol = np.zeros((256,4))
         for j,y in enumerate(all_comb):
@@ -136,7 +136,7 @@ def rgb2triggervalue(rgb):
     blue_bin = list('0'*max(0, 8-len(blue_bin))) + blue_bin
 
     #trigger_bin = green_bin[0::2] + blue_bin[0::2]
-    trigger_bin = green_bin[4:8] + blue_bin[4:8]
+    trigger_bin =  blue_bin[4:8] + green_bin[4:8]
     trigger_bin = "0b" + "".join(trigger_bin)
     return(int(trigger_bin,2))
 
